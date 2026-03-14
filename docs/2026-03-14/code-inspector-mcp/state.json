@@ -1,0 +1,36 @@
+{
+  "workflow_phase": "done",
+  "mode": "normal",
+  "planning": {
+    "no_question_streak": 0
+  },
+  "plan_approved": true,
+  "team_name": "",
+  "current_dev_phase": 3,
+  "current_step": 1,
+  "dev_phases": {
+    "1": {
+      "name": "foundation",
+      "description": "pyproject.toml, models, scoring",
+      "status": "done",
+      "folder": "phase-1-foundation"
+    },
+    "2": {
+      "name": "inspectors",
+      "description": "base + detekt/ktlint/android_lint",
+      "status": "done",
+      "folder": "phase-2-inspectors"
+    },
+    "3": {
+      "name": "server-integration",
+      "description": "FastMCP server + integration",
+      "status": "done",
+      "folder": "phase-3-server"
+    }
+  },
+  "verification": {
+    "rounds_passed": 3
+  },
+  "task_dir": "docs/2026-03-14/code-inspector-mcp",
+  "active_file": "docs/2026-03-14/code-inspector-mcp/.active"
+}

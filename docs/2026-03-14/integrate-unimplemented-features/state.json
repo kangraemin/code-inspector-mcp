@@ -1,0 +1,34 @@
+{
+  "workflow_phase": "done",
+  "mode": "normal",
+  "planning": {
+    "no_question_streak": 0
+  },
+  "plan_approved": true,
+  "team_name": "",
+  "current_dev_phase": 2,
+  "current_step": 2,
+  "dev_phases": {
+    "1": {
+      "name": "Inspector 리팩토링 + Scoring 수정",
+      "folder": "phase-1-inspector-refactor",
+      "steps": {
+        "1": "completed",
+        "2": "completed"
+      }
+    },
+    "2": {
+      "name": "ignore 패턴 + metrics 연결",
+      "folder": "phase-2-ignore-metrics",
+      "steps": {
+        "1": "completed",
+        "2": "completed"
+      }
+    }
+  },
+  "verification": {
+    "rounds_passed": 3
+  },
+  "task_dir": "docs/2026-03-14/integrate-unimplemented-features",
+  "active_file": "docs/2026-03-14/integrate-unimplemented-features/.active"
+}
