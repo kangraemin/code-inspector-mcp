@@ -19,5 +19,5 @@ def calculate_score(
 
     weights = severity_weights or SEVERITY_WEIGHTS
     raw_deduction = sum(weights.get(i.severity, 0.0) for i in issues)
-    normalized = raw_deduction * (10 / max(total_files, 1))
+    normalized = raw_deduction / max(total_files, 1) * 10
     return round(max(0.0, 10.0 - min(normalized, 10.0)), 2)

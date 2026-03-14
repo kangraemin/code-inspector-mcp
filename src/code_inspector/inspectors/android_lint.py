@@ -27,7 +27,7 @@ class AndroidLintInspector(BaseInspector):
         gradlew = os.path.join(path, "gradlew")
         return os.path.isfile(gradlew) and os.access(gradlew, os.X_OK)
 
-    async def run(self, path: str, files: list[str] | None = None) -> ToolResult:
+    async def run(self, path: str, files: list[str] | None = None, severity_weights: dict[str, float] | None = None) -> ToolResult:
         if not self._has_gradlew(path):
             return ToolResult(
                 tool="android_lint",
@@ -57,7 +57,7 @@ class AndroidLintInspector(BaseInspector):
             all_issues = [i for i in all_issues if i.file in files]
 
         total_files = len(files) if files else self._count_kt_files(path)
-        score = calculate_score(all_issues, total_files)
+        score = calculate_score(all_issues, total_files, severity_weights)
         return ToolResult(tool="android_lint", score=score, issues=all_issues)
 
     def _find_report(self, path: str) -> str | None:
@@ -102,10 +102,3 @@ class AndroidLintInspector(BaseInspector):
                 )
         return issues
 
-    def _count_kt_files(self, path: str) -> int:
-        count = 0
-        for root, _, filenames in os.walk(path):
-            for f in filenames:
-                if f.endswith((".kt", ".kts")):
-                    count += 1
-        return max(count, 1)

@@ -11,7 +11,7 @@ from code_inspector.scoring import calculate_score
 class KtlintInspector(BaseInspector):
     name = "ktlint"
 
-    async def run(self, path: str, files: list[str] | None = None) -> ToolResult:
+    async def run(self, path: str, files: list[str] | None = None, severity_weights: dict[str, float] | None = None) -> ToolResult:
         if not self.is_available():
             return ToolResult(
                 tool="ktlint",
@@ -37,7 +37,7 @@ class KtlintInspector(BaseInspector):
 
         issues = self._parse_json(stdout, path)
         total_files = len(files) if files else self._count_kt_files(path)
-        score = calculate_score(issues, total_files)
+        score = calculate_score(issues, total_files, severity_weights)
         return ToolResult(tool="ktlint", score=score, issues=issues)
 
     def _parse_json(self, json_str: str, base_path: str) -> list[Issue]:
@@ -66,10 +66,3 @@ class KtlintInspector(BaseInspector):
                 )
         return issues
 
-    def _count_kt_files(self, path: str) -> int:
-        count = 0
-        for root, _, filenames in os.walk(path):
-            for f in filenames:
-                if f.endswith((".kt", ".kts")):
-                    count += 1
-        return max(count, 1)

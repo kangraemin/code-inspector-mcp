@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import shutil
 import subprocess
 from abc import ABC, abstractmethod
@@ -12,7 +13,7 @@ class BaseInspector(ABC):
     name: str = ""
 
     @abstractmethod
-    async def run(self, path: str, files: list[str] | None = None) -> ToolResult:
+    async def run(self, path: str, files: list[str] | None = None, severity_weights: dict[str, float] | None = None) -> ToolResult:
         ...
 
     def is_available(self) -> bool:
@@ -40,6 +41,14 @@ class BaseInspector(ABC):
             stderr.decode(errors="replace"),
             proc.returncode or 0,
         )
+
+    def _count_kt_files(self, path: str) -> int:
+        count = 0
+        for root, _, filenames in os.walk(path):
+            for f in filenames:
+                if f.endswith((".kt", ".kts")):
+                    count += 1
+        return max(count, 1)
 
     def _get_changed_files(self, path: str, extensions: list[str]) -> list[str]:
         ext_args = [f"-- *{ext}" for ext in extensions]

@@ -19,16 +19,11 @@ SEVERITY_MAP = {
 class DetektInspector(BaseInspector):
     name = "detekt-cli"
 
-    def is_available(self) -> bool:
-        if super().is_available():
-            return True
-        return False
-
     def _has_gradle_detekt(self, path: str) -> bool:
         gradlew = os.path.join(path, "gradlew")
         return os.path.isfile(gradlew) and os.access(gradlew, os.X_OK)
 
-    async def run(self, path: str, files: list[str] | None = None) -> ToolResult:
+    async def run(self, path: str, files: list[str] | None = None, severity_weights: dict[str, float] | None = None) -> ToolResult:
         if not self.is_available() and not self._has_gradle_detekt(path):
             return ToolResult(
                 tool="detekt",
@@ -61,7 +56,7 @@ class DetektInspector(BaseInspector):
 
             issues = self._parse_xml(report_path, path)
             total_files = len(files) if files else self._count_kt_files(path)
-            score = calculate_score(issues, total_files)
+            score = calculate_score(issues, total_files, severity_weights)
             return ToolResult(tool="detekt", score=score, issues=issues)
         finally:
             if os.path.isfile(report_path):
@@ -96,10 +91,3 @@ class DetektInspector(BaseInspector):
                 )
         return issues
 
-    def _count_kt_files(self, path: str) -> int:
-        count = 0
-        for root, _, filenames in os.walk(path):
-            for f in filenames:
-                if f.endswith((".kt", ".kts")):
-                    count += 1
-        return max(count, 1)

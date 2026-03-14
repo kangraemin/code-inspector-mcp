@@ -90,7 +90,7 @@ async def inspect(
         files = enabled_inspectors[0]._get_changed_files(path, [".kt", ".kts"])
 
     results: list[ToolResult] = await asyncio.gather(
-        *[inspector.run(path, files) for inspector in enabled_inspectors]
+        *[inspector.run(path, files, cfg.severity_weights) for inspector in enabled_inspectors]
     )
 
     available_results = [r for r in results if r.available]
