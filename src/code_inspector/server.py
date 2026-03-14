@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import os
+from pathlib import PurePath
 
 from fastmcp import FastMCP
 
@@ -15,7 +16,11 @@ from code_inspector.config import (
     load_config,
     save_config,
 )
+from code_inspector.metrics.complexity import analyze_complexity
+from code_inspector.metrics.coverage import analyze_coverage
+from code_inspector.metrics.duplication import analyze_duplication
 from code_inspector.models import InspectionResult, ToolResult
+from code_inspector.scoring import calculate_score
 
 mcp = FastMCP("code-inspector")
 
@@ -93,6 +98,19 @@ async def inspect(
         *[inspector.run(path, files, cfg.severity_weights) for inspector in enabled_inspectors]
     )
 
+    # ignore 패턴으로 이슈 필터링
+    if cfg.ignore:
+        for r in results:
+            if r.available and r.issues:
+                original_count = len(r.issues)
+                r.issues = [
+                    issue for issue in r.issues
+                    if not _should_ignore(issue.file, cfg.ignore)
+                ]
+                if len(r.issues) != original_count:
+                    total = len(files) if files else enabled_inspectors[0]._count_kt_files(path)
+                    r.score = calculate_score(r.issues, total, cfg.severity_weights)
+
     available_results = [r for r in results if r.available]
     if available_results:
         total_weight = 0.0
@@ -118,6 +136,49 @@ async def inspect(
         else:
             lines.append(f"{r.tool}: {r.score}/10 {status}")
 
+    # Metrics 분석
+    metrics_results = {}
+    kt_files_for_metrics = None
+
+    if cfg.metrics.complexity.enabled or cfg.metrics.duplication.enabled:
+        kt_files_for_metrics = _collect_kt_files(path, files, cfg.ignore)
+
+    if cfg.metrics.complexity.enabled and kt_files_for_metrics:
+        complexity_violations = []
+        for fi in kt_files_for_metrics:
+            cr = analyze_complexity(
+                fi["content"], fi["path"], cfg.metrics.complexity.max_per_function
+            )
+            if cr["violations"]:
+                complexity_violations.append(cr)
+        metrics_results["complexity"] = {
+            "files_analyzed": len(kt_files_for_metrics),
+            "violations": complexity_violations,
+        }
+
+    if cfg.metrics.duplication.enabled and kt_files_for_metrics:
+        metrics_results["duplication"] = analyze_duplication(kt_files_for_metrics)
+
+    if cfg.metrics.coverage.enabled:
+        metrics_results["coverage"] = analyze_coverage(
+            path, cfg.metrics.coverage.min_percent
+        )
+
+    # Metrics summary
+    if metrics_results:
+        if "complexity" in metrics_results:
+            v_count = len(metrics_results["complexity"]["violations"])
+            lines.append(f"complexity: {v_count} violation(s)")
+        if "duplication" in metrics_results:
+            dup_pct = metrics_results["duplication"]["duplication_percentage"]
+            lines.append(f"duplication: {dup_pct}%")
+        if "coverage" in metrics_results:
+            cov = metrics_results["coverage"]
+            if cov.get("available"):
+                lines.append(f"coverage: {cov['coverage_percent']}%")
+            else:
+                lines.append("coverage: N/A")
+
     lines.append(f"overall: {overall}/10 {'PASS ✅' if passed else 'FAIL ❌'}")
 
     summary = "\n".join(lines)
@@ -133,6 +194,9 @@ async def inspect(
     )
 
     output = result.model_dump()
+
+    if metrics_results:
+        output["metrics"] = metrics_results
 
     if fix and not passed:
         suggestions = _generate_fix_suggestions(results)
@@ -283,6 +347,46 @@ async def inspect_config(
         "path": config_path,
         "action_taken": "read (defaults, no file exists)",
     }
+
+
+def _should_ignore(file_path: str, patterns: list[str]) -> bool:
+    p = PurePath(file_path)
+    return any(p.full_match(pat) for pat in patterns)
+
+
+def _collect_kt_files(
+    path: str,
+    changed_files: list[str] | None,
+    ignore_patterns: list[str],
+) -> list[dict]:
+    result = []
+    if changed_files:
+        for rel_path in changed_files:
+            if _should_ignore(rel_path, ignore_patterns):
+                continue
+            abs_path = os.path.join(path, rel_path)
+            try:
+                with open(abs_path, errors="replace") as f:
+                    content = f.read()
+                result.append({"path": rel_path, "content": content})
+            except OSError:
+                pass
+    else:
+        for root, dirs, filenames in os.walk(path):
+            dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
+            for fname in filenames:
+                if fname.endswith((".kt", ".kts")):
+                    fpath = os.path.join(root, fname)
+                    rel = os.path.relpath(fpath, path)
+                    if _should_ignore(rel, ignore_patterns):
+                        continue
+                    try:
+                        with open(fpath, errors="replace") as f:
+                            content = f.read()
+                        result.append({"path": rel, "content": content})
+                    except OSError:
+                        pass
+    return result
 
 
 def _generate_fix_suggestions(results: list[ToolResult]) -> list[str]:
