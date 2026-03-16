@@ -1,6 +1,6 @@
 {
-  "version": "410bd43",
-  "installed_at": "2026-03-14T11:58:01.887538",
+  "version": "24cb43b",
+  "installed_at": "2026-03-16T21:09:04.992309",
   "files": [
     "agents/dev.md",
     "agents/intent.md",
@@ -9,14 +9,17 @@
     "agents/verifier.md",
     "agents/guides/tc-guide.md",
     "skills/dev-bounce/SKILL.md",
+    "skills/update-bouncer/SKILL.md",
     "hooks/hooks.json",
     "hooks/plan-gate.sh",
     "hooks/bash-gate.sh",
     "hooks/doc-reminder.sh",
     "hooks/bash-audit.sh",
     "hooks/completion-gate.sh",
+    "hooks/stop-active-cleanup.sh",
     "hooks/subagent-track.sh",
     "hooks/subagent-cleanup.sh",
-    "hooks/lib/resolve-task.sh"
+    "hooks/lib/resolve-task.sh",
+    "scripts/update-check.sh"
   ]
 }

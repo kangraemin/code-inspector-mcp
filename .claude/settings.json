@@ -48,6 +48,14 @@
             "command": "/Users/ram/programming/vibecoding/codeInspector/.claude/hooks/completion-gate.sh"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/ram/programming/vibecoding/codeInspector/.claude/hooks/stop-active-cleanup.sh"
+          }
+        ]
       }
     ],
     "SubagentStart": [
@@ -69,7 +77,20 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/ram/programming/vibecoding/codeInspector/.claude/scripts/update-check.sh",
+            "timeout": 30
+          }
+        ]
+      }
     ]
   },
-  "env": {}
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  }
 }
