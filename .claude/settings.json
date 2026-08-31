@@ -1,23 +1,28 @@
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/ai-bouncer/hooks/session-start.sh",
+            "args": [],
+            "timeout": 30
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/ram/programming/vibecoding/codeInspector/.claude/hooks/plan-gate.sh"
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/ai-bouncer/hooks/pre-tool.sh",
+            "args": [],
+            "timeout": 10
           }
         ],
-        "matcher": "Write|Edit|MultiEdit"
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/ram/programming/vibecoding/codeInspector/.claude/hooks/bash-gate.sh"
-          }
-        ],
-        "matcher": "Bash"
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash"
       }
     ],
     "PostToolUse": [
@@ -25,19 +30,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/ram/programming/vibecoding/codeInspector/.claude/hooks/doc-reminder.sh"
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/ai-bouncer/hooks/post-tool.sh",
+            "args": [],
+            "timeout": 10
           }
         ],
-        "matcher": "Write|Edit|MultiEdit"
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/ram/programming/vibecoding/codeInspector/.claude/hooks/bash-audit.sh"
-          }
-        ],
-        "matcher": "Bash"
+        "matcher": "ExitPlanMode|Skill"
       }
     ],
     "Stop": [
@@ -45,52 +43,24 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/ram/programming/vibecoding/codeInspector/.claude/hooks/completion-gate.sh"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/ram/programming/vibecoding/codeInspector/.claude/hooks/stop-active-cleanup.sh"
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/ai-bouncer/hooks/stop.sh",
+            "args": [],
+            "timeout": 300
           }
         ]
       }
     ],
-    "SubagentStart": [
+    "SessionEnd": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/ram/programming/vibecoding/codeInspector/.claude/hooks/subagent-track.sh"
-          }
-        ]
-      }
-    ],
-    "SubagentStop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/ram/programming/vibecoding/codeInspector/.claude/hooks/subagent-cleanup.sh"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/ram/programming/vibecoding/codeInspector/.claude/scripts/update-check.sh",
-            "timeout": 30
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/ai-bouncer/hooks/session-end.sh",
+            "args": [],
+            "timeout": 5
           }
         ]
       }
     ]
-  },
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   }
 }

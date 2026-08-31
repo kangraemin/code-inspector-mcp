@@ -1,25 +1,14 @@
 {
-  "version": "24cb43b",
-  "installed_at": "2026-03-16T21:09:04.992309",
   "files": [
-    "agents/dev.md",
-    "agents/intent.md",
-    "agents/lead.md",
-    "agents/qa.md",
-    "agents/verifier.md",
-    "agents/guides/tc-guide.md",
-    "skills/dev-bounce/SKILL.md",
-    "skills/update-bouncer/SKILL.md",
-    "hooks/hooks.json",
-    "hooks/plan-gate.sh",
-    "hooks/bash-gate.sh",
-    "hooks/doc-reminder.sh",
-    "hooks/bash-audit.sh",
-    "hooks/completion-gate.sh",
-    "hooks/stop-active-cleanup.sh",
-    "hooks/subagent-track.sh",
-    "hooks/subagent-cleanup.sh",
-    "hooks/lib/resolve-task.sh",
-    "scripts/update-check.sh"
+    "/Users/ram/programming/vibecoding/codeInspector/.claude/ai-bouncer/engine/compile.py",
+    "/Users/ram/programming/vibecoding/codeInspector/.claude/ai-bouncer/engine/bouncer.sh",
+    "/Users/ram/programming/vibecoding/codeInspector/.claude/ai-bouncer/engine/lib/common.sh",
+    "/Users/ram/programming/vibecoding/codeInspector/.claude/ai-bouncer/hooks/session-start.sh",
+    "/Users/ram/programming/vibecoding/codeInspector/.claude/ai-bouncer/hooks/pre-tool.sh",
+    "/Users/ram/programming/vibecoding/codeInspector/.claude/ai-bouncer/hooks/post-tool.sh",
+    "/Users/ram/programming/vibecoding/codeInspector/.claude/ai-bouncer/hooks/stop.sh",
+    "/Users/ram/programming/vibecoding/codeInspector/.claude/ai-bouncer/hooks/session-end.sh",
+    "/Users/ram/programming/vibecoding/codeInspector/.claude/ai-bouncer/scripts/update-check.sh",
+    "/Users/ram/programming/vibecoding/codeInspector/.claude/skills/dev-bounce/SKILL.md"
   ]
 }
